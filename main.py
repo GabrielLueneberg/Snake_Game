@@ -117,7 +117,6 @@ class Algorithm(Spot):
                 break
 
             curr_cell.get_neighbors(self.grid, snake.coordinates)
-            print(curr_cell.get_neighbors(self.grid, snake.coordinates))
             for neighbor in curr_cell.neighbors:
                 temp_g_score = curr_cell.g_score + 1
                 temp_f_score = temp_g_score + self.h(neighbor, end)
@@ -142,7 +141,6 @@ class SnakeGame:
     def __init__(self, WIN):
         self.body_size = BODY_PARTS
         self.coordinates = []
-        self.head = [0, 0]
         self.squares = []
         self.color = GREEN
         self.win = WIN
@@ -150,6 +148,7 @@ class SnakeGame:
 
         for i in range(BODY_PARTS - 1, -1, -1):
             self.coordinates.append([i * BLOCK_SIZE, 0])
+        self.head = self.coordinates[0]
         self.place_food()
 
     def draw_snake(self):
@@ -212,12 +211,12 @@ while True:
         snake.place_food()
         fwd_path = algorithm.astar()
         snake.move(fwd_path)
-    else:
+    elif len(snake.coordinates) > snake.body_size:
         del snake.coordinates[-1]
 
     spot.update_ui(WIN, grid, ROWS, WIDTH)
     snake.draw_food()
-    snake.draw_snake() #tteste23
+    snake.draw_snake()
     pygame.display.update()
     snake.move(fwd_path)
     clock.tick(SPEED)
