@@ -23,8 +23,8 @@ class Spot:
     def __init__(self, row, col, block_size, total_rows):
         self.row = row
         self.col = col
-        self.x = row * block_size
-        self.y = col * block_size
+        self.x = col * block_size
+        self.y = row * block_size
         self.color = BLACK
         self.neighbors = []
         self.block_size = block_size
@@ -62,13 +62,23 @@ class Spot:
 
         self.draw_grid(win, rows, width)
 
+    def is_barrier(self,snake_coordinates):
+        snake_coordinates_set = set((coord[0]//80, coord[1]//80) for coord in snake_coordinates)
+        return (self.row, self.col) in snake_coordinates_set
+
     def get_neighbors(self, grid, snake_coordinates):
         self.neighbors = []
-        for direction in [(1, 0), (-1, 0), (0, 1), (0, -1)]:  # Down, Up, Right, Left
-            row, col = self.row + direction[0], self.col + direction[1]
-            if 0 <= row < self.total_rows and 0 <= col < self.total_rows:
-                if [row, col] not in snake_coordinates:
-                    self.neighbors.append(grid[row][col])
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier(snake_coordinates):  # DOWN
+            self.neighbors.append(grid[self.row + 1][self.col])
+
+        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier(snake_coordinates):  # UP
+            self.neighbors.append(grid[self.row - 1][self.col])
+
+        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier(snake_coordinates):  # RIGHT
+            self.neighbors.append(grid[self.row][self.col + 1])
+
+        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(snake_coordinates):  # LEFT
+            self.neighbors.append(grid[self.row][self.col - 1])
         return self.neighbors
 
     def get_spot(self, grid, coordinates):
